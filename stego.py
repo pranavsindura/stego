@@ -4,7 +4,7 @@ population = []
 MUTATION_RATE = 1
 ITERS = 1000
 POPULATION_SIZE = 100
-LEN = 27
+LEN = 27 # Length of chromosome
 
 def init_population():
     global population
@@ -50,7 +50,6 @@ def crossover():
         new_population.append(child)
     population = new_population[::]
 
-
 def mutation():
     global population
     for i in range(POPULATION_SIZE):
@@ -77,8 +76,6 @@ def find_embedding(host, secret):
         # Mutation
         mutation()
     return population[0]
-
-
 
 def encrypt(host_img, secret_img):
     # Convert both to relevant format
