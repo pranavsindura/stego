@@ -7,6 +7,7 @@ POPULATION_SIZE = 100
 LEN = 27
 
 def init_population():
+    global population
     population = []
     for i in range(POPULATION_SIZE):
         p = 0
@@ -19,6 +20,7 @@ def fitness(host, secret, chromosome):
     new_population = []
 
 def selection():
+    global population
     # select 40% good
     # select 10% bad
     new_population = []
@@ -30,12 +32,35 @@ def selection():
     population = new_population[::]
 
 def crossover():
-    new_population = []
+    global population
+    new_population = population[::]
+    while len(new_population) < POPULATION_SIZE:
+        shuffle(population)
+        P = population[0]
+        Q = population[1]
+        child = 0
+        for i in range(LEN):
+            A = (P >> i) & 1
+            B = (Q >> i) & 1
+            choice = randint(0, 1)
+            if choice == 0:
+                child = child | (A << i)
+            else:
+                child = child | (B << i)
+        new_population.append(child)
+    population = new_population[::]
+
 
 def mutation():
-    new_population = []
+    global population
+    for i in range(POPULATION_SIZE):
+        for j in range(LEN):
+            chance = randint(1, 100)
+            if chance <= MUTATION_RATE:
+                population[i] ^= 1 << j
 
 def find_embedding(host, secret):
+    global population
     init_population()
     gen = 0
     while gen < ITERS:
@@ -73,6 +98,4 @@ def decrypt(stego_img, key):
 
 
 if __name__ == '__main__':
-    A = [1,2,3,4,5,6,7,8,9,10]
-    print(A)
-    print(A[::])
+    print('Hello Stego')
