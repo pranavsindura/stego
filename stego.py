@@ -17,6 +17,7 @@ def init_population():
         population.append(p)
 
 def fitness(host, secret, chromosome):
+    #write psnr
     return psnr(host, secret)
 
 def selection():
