@@ -6,7 +6,17 @@ population = []
 MUTATION_RATE = 1
 ITERS = 1000
 POPULATION_SIZE = 100
-LEN = 27 # Length of chromosome
+LEN = 28 
+# Length of chromosome
+# Direction  3
+# X_off      9
+# Y_off      9
+# Bit Planes 4
+# SB Pole    1
+# SB Dir     1
+# BP Dir     1
+# ------------
+#           28
 
 def init_population():
     global population
