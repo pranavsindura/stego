@@ -1,5 +1,6 @@
 from random import randint, shuffle
 from psnr import psnr
+from embedder import embed
 
 population = []
 MUTATION_RATE = 1
@@ -19,7 +20,8 @@ def init_population():
 
 def fitness(host, secret, chromosome):
     """more the psnr, more fit the stego image is"""
-    return psnr(host, secret)
+    stego = embed(host, secret, chromosome)
+    return psnr(host, stego)
 
 def selection():
     global population
