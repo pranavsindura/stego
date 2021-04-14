@@ -86,8 +86,9 @@ def encrypt(host_img, secret_img):
     host = host_img
     secret = secret_img
     # Pass on to genetic algorithm
-    stego_img, key = find_embedding(host, secret)
+    key = find_embedding(host, secret)
 
+    stego_img = embed(host_img, secret_img, key)
     # Encrypt key if needed
     return stego_img, key
 
