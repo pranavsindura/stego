@@ -23,10 +23,12 @@ def init_population():
     population = []
     for i in range(POPULATION_SIZE):
         p = 0
+        i += 1
         for j in range(LEN):
             b = randint(0, 1)
             p = p | (b << j)
         population.append(p)
+        i -= 1
 
 def fitness(host, secret, chromosome):
     """more the psnr, more fit the stego image is"""

@@ -20,13 +20,13 @@ def embed(stego, secret, chromosome):
     numpy.array: stego bit sequence with embedded bits
     """
     # Bit-Planes: Extract the bit mask
-    # mask = chromosome[3];
-    # mask = np.unpackbits(np.array([chromosome[3]], dtype='uint8'))[4:]
-    # idx = np.argwhere(mask == True)
-    # capacity = round(8 / len(idx)) * len(secret)
+    mask = chromosome[3]
+    mask = np.unpackbits(np.array([chromosome[3]], dtype='uint8'))[4:]
+    idx = np.argwhere(mask == True)
+    capacity = round(8 / len(idx)) * len(secret)
 
-    # if capacity > stego.shape[0]:
-    #     print("Insufficient stego pixel size.")
+    if capacity > stego.shape[0]:
+        print("Insufficient stego pixel size.")
 
     # Convert data to uint8
     stego = stego.astype('uint8')
@@ -42,7 +42,7 @@ def embed(stego, secret, chromosome):
 
     # BP-Dire: Use LSB or MSB
     if chromosome[6]:
-        # idx += 4
+        idx += 4
 
     # Secret bitarray [nbits]
     secret = np.unpackbits(secret)
