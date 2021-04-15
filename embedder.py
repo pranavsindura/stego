@@ -19,29 +19,38 @@ def embed(stego, secret, chromosome):
     Return:
     numpy.array: stego bit sequence with embedded bits
     """
+    init_size = stego.shape
+    direction =  (chromosome >> 25) & 7
+    X_off =      (chromosome >> 16) & 511
+    Y_off =      (chromosome >>  7) & 511
+    bit_planes = (chromosome >>  3) & 15
+    sb_pole =    (chromosome >>  2) & 1
+    sb_dir =     (chromosome >>  1) & 1
+    bp_dir =     (chromosome >>  0) & 1
     # Bit-Planes: Extract the bit mask
-    mask = chromosome[3]
-    mask = np.unpackbits(np.array([chromosome[3]], dtype='uint8'))[4:]
+    mask = np.unpackbits(np.array([bit_planes], dtype='uint8'))[4:]
     idx = np.argwhere(mask == True)
+    if len(idx) == 0:
+        return None
     capacity = round(8 / len(idx)) * len(secret)
 
     if capacity > stego.shape[0]:
-        print("Insufficient stego pixel size.")
+        return None
 
     # Convert data to uint8
     stego = stego.astype('uint8')
     secret = secret.astype('uint8')
 
     # SB-Pole: Compliment secret bits
-    if chromosome[4]:
+    if sb_pole:
         np.invert(secret, secret)
 
     # SB-Dire: reverse the secret sequence
-    if chromosome[5]:
+    if sb_dir:
         secret = secret[::-1]
 
     # BP-Dire: Use LSB or MSB
-    if chromosome[6]:
+    if bp_dir:
         idx += 4
 
     # Secret bitarray [nbits]
@@ -59,4 +68,4 @@ def embed(stego, secret, chromosome):
         secret = np.delete(secret, np.s_[:len(idx)])
         it.iternext()
 
-    return np.packbits(stego)
+    return np.packbits(stego).reshape(init_size)

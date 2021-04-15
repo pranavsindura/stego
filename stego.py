@@ -1,12 +1,13 @@
 from random import randint, shuffle
 from psnr import psnr
 from embedder import embed
+import math
 
 population = []
 MUTATION_RATE = 1
-ITERS = 1000
+ITERS = 10
 POPULATION_SIZE = 100
-LEN = 28 
+LEN = 28  
 # Length of chromosome
 # Direction  3
 # X_off      9
@@ -22,17 +23,15 @@ def init_population():
     global population
     population = []
     for i in range(POPULATION_SIZE):
-        p = 0
-        i += 1
-        for j in range(LEN):
-            b = randint(0, 1)
-            p = p | (b << j)
+        p = randint(1, 1 << LEN) - 1
         population.append(p)
         i -= 1
 
 def fitness(host, secret, chromosome):
     """more the psnr, more fit the stego image is"""
     stego = embed(host, secret, chromosome)
+    if stego is None:
+        return -math.inf
     return psnr(host, stego)
 
 def selection():
@@ -51,18 +50,16 @@ def crossover():
     global population
     new_population = population[::]
     while len(new_population) < POPULATION_SIZE:
-        shuffle(population)
-        P = population[0]
-        Q = population[1]
+        L = randint(1, len(population) - 1) - 1
+        R = randint(L + 1, len(population)) - 1
+        if randint(0, 1):
+            L, R = R, L
+        P = population[L]
+        Q = population[R]
         child = 0
-        for i in range(LEN):
-            A = (P >> i) & 1
-            B = (Q >> i) & 1
-            choice = randint(0, 1)
-            if choice == 0:
-                child = child | (A << i)
-            else:
-                child = child | (B << i)
+        mask = randint(1, 1 << LEN) - 1
+        revmask = (1 << LEN) - 1 - mask
+        child = (P & mask) | (Q & revmask)
         new_population.append(child)
     population = new_population[::]
 
@@ -81,16 +78,22 @@ def find_embedding(host, secret):
     while gen < ITERS:
         # Generation gen, output every 100th generation to see improvement
         gen += 1
+        print("Gen:", gen)
         # Sort the population based on fitness
         # population[0] is the best chromosome in the population
-        population.sort(key=lambda x:fitness(host, secret, x))
-
+        population.sort(key=lambda x:fitness(host, secret, x), reverse=True)
+        print(*population[:10])
+        print("Fitness", fitness(host, secret, population[0]))
         # Selection
         selection()
+        print("Selection")
         # Crossover
         crossover()
+        print("Crossover")
         # Mutation
         mutation()
+        print("Mutation")
+    population.sort(key=lambda x:fitness(host, secret, x), reverse=True)
     return population[0]
 
 def encrypt(host_img, secret_img):
