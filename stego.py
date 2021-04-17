@@ -7,7 +7,7 @@ population = []
 MUTATION_RATE = 1
 ITERS = 10
 POPULATION_SIZE = 100
-LEN = 28 
+LEN = 28  
 # Length of chromosome
 # Direction  3
 # X_off      9
@@ -25,6 +25,7 @@ def init_population():
     for i in range(POPULATION_SIZE):
         p = randint(1, 1 << LEN) - 1
         population.append(p)
+        i -= 1
 
 def fitness(host, secret, chromosome):
     """more the psnr, more fit the stego image is"""
