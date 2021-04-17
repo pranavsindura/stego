@@ -6,8 +6,8 @@ from PIL import Image
 # Retrieve host image host_img
 # Retrieve secret image secret_img
 
-host_img = np.array(Image.open('src/lena128.png'))
-secret_img = np.array(Image.open('src/baboon-64.png'))
+host_img = np.array(Image.open('src/baboon-140.png'))
+secret_img = np.array(Image.open('src/airplane-64.png'))
 
 # Encrypt
 stego_img, key = stego.encrypt(host_img, secret_img)
