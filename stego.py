@@ -4,8 +4,8 @@ from embedder import embed
 import math
 
 population = []
-MUTATION_RATE = 1
-ITERS = 10
+MUTATION_RATE = 1e-3
+ITERS = 100
 POPULATION_SIZE = 100
 LEN = 28  
 # Length of chromosome
@@ -25,7 +25,6 @@ def init_population():
     for i in range(POPULATION_SIZE):
         p = randint(1, 1 << LEN) - 1
         population.append(p)
-        i -= 1
 
 def fitness(host, secret, chromosome):
     """more the psnr, more fit the stego image is"""
@@ -37,14 +36,9 @@ def fitness(host, secret, chromosome):
 def selection():
     global population
     # select 40% good
-    # select 10% bad
-    new_population = []
     N = int(0.4 * POPULATION_SIZE)
-    new_population += population[:N]
-
-    M = int(0.1 * POPULATION_SIZE)
-    new_population += population[-M:]
-    population = new_population[::]
+    while len(population) > N:
+        population.pop()
 
 def crossover():
     global population
@@ -67,7 +61,8 @@ def mutation():
     global population
     for i in range(POPULATION_SIZE):
         for j in range(LEN):
-            chance = randint(1, 100)
+            chance = randint(1, 10000)
+            chance /= 10000
             if chance <= MUTATION_RATE:
                 population[i] ^= 1 << j
 
@@ -76,12 +71,17 @@ def find_embedding(host, secret):
     init_population()
     gen = 0
     while gen < ITERS:
+        assert len(population) == POPULATION_SIZE
         # Generation gen, output every 100th generation to see improvement
         gen += 1
         print("Gen:", gen)
         # Sort the population based on fitness
         # population[0] is the best chromosome in the population
-        population.sort(key=lambda x:fitness(host, secret, x), reverse=True)
+        # population.sort(key=lambda x:fitness(host, secret, x))
+        population = [(fitness(host, secret, x), x) for x in population]
+        population.sort(reverse=True)
+        population = [x[1] for x in population]
+
         print(*population[:10])
         print("Fitness", fitness(host, secret, population[0]))
         # Selection
@@ -93,7 +93,12 @@ def find_embedding(host, secret):
         # Mutation
         mutation()
         print("Mutation")
-    population.sort(key=lambda x:fitness(host, secret, x), reverse=True)
+
+    # population.sort(key=lambda x:fitness(host, secret, x))
+    population = [(fitness(host, secret, x), x) for x in population]
+    population.sort(reverse=True)
+    population = [x[1] for x in population]
+
     return population[0]
 
 def encrypt(host_img, secret_img):

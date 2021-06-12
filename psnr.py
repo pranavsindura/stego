@@ -13,4 +13,4 @@ def psnr(img1, img2):
 
     if mse == 0:
         return 100
-    return 10 * math.log10(255 / mse)
+    return 10 * math.log10(255 * 255 / mse)
