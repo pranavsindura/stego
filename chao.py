@@ -1,3 +1,4 @@
+from collections import defaultdict
 def makePermutation(x0, a, limit):
     # f(n + 1) = a * f(n) * (1 - f(n))
     arr = []
@@ -8,8 +9,17 @@ def makePermutation(x0, a, limit):
         arr.append(newx)
         x0 = newx
         ptr += 1
-    return arr
+    d = defaultdict()
+    start=1
+    for x in arr:
+        d[x]=start
+        start+=1
+    final = []
+    for i in sorted (d.keys()) :
+        final.append(d[i])
+    return final
 
 # arr = makePermutation(0.492, 3.57, 10)
 # for x in arr:
 #     print(x)
+#makePermutation(0.492, 3.57, 10)
