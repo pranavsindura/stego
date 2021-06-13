@@ -5,19 +5,22 @@ import math
 
 population = []
 MUTATION_RATE = 1e-3
-ITERS = 100
+ITERS = 5
 POPULATION_SIZE = 100
-LEN = 28  
-# Length of chromosome
-# Direction  3
-# X_off      9
-# Y_off      9
-# Bit Planes 4
-# SB Pole    1
-# SB Dir     1
-# BP Dir     1
-# ------------
-#           28
+LEN = 45  
+# Chromosome
+# Gene       | Length
+# -------------------
+# x0         |    10
+# a          |    10
+# X_off      |     9
+# Y_off      |     9
+# Bit Planes |     4
+# SB Pole    |     1
+# SB Dir     |     1
+# BP Dir     |     1
+# ------------------
+#            |    45
 
 def init_population():
     global population

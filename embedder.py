@@ -1,27 +1,15 @@
 import numpy as np
-
-def embed_the_bit(stego, secret, idx):
-    """Embed the secret bits in stego[idx]"""
-    np.put(stego, idx, secret)
+from chao import chao_permutation
 
 def embed(stego, secret, chromosome):
     """Embed secret bits into stego bits according to the chromosome"""
 
     """The chromosome has the following gene representation:
-    [dir, xoffset, yoffset, bit-planes, sb-pole, sb-dire, bp-dire]"""
-
-    """
-    Args:
-    stego: Stego pixel sequence
-    secret: Secret pixel sequence
-    chromosome: Chromosome of the GA
-
-    Return:
-    numpy.array: stego bit sequence with embedded bits
-    """
+    [x0, a, xoffset, yoffset, bit-planes, sb-pole, sb-dire, bp-dire]"""
     stego_shape = stego.shape
     secret_shape = secret.shape
-    direction =  (chromosome >> 25) & 7
+    x0 =         ((chromosome >> 35) & 1023) / 1024
+    a =          3 + ((chromosome >> 25) & 1023) / 1024
     X_off =      (chromosome >> 16) & 511
     Y_off =      (chromosome >>  7) & 511
     bit_planes = (chromosome >>  3) & 15
@@ -61,8 +49,8 @@ def embed(stego, secret, chromosome):
         idx += 4
 
     # Generate permutation and reorder the secret bits
-    # perm = np.random.permutation(secret.shape[0])
-    # secret = secret[perm]
+    perm = chao_permutation(x0, a, len(secret))
+    secret = secret[perm]
 
     # Secret bitarray
     secret = np.unpackbits(secret)
