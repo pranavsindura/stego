@@ -4,9 +4,9 @@ from embedder import embed
 import math
 
 population = []
-MUTATION_RATE = 1e-3
-ITERS = 5
-POPULATION_SIZE = 100
+MUTATION_RATE = 0.04
+ITERS = 50
+POPULATION_SIZE = 300
 LEN = 45  
 # Chromosome
 # Gene       | Length
@@ -75,7 +75,6 @@ def find_embedding(host, secret):
     gen = 0
     while gen < ITERS:
         assert len(population) == POPULATION_SIZE
-        # Generation gen, output every 100th generation to see improvement
         gen += 1
         print("Gen:", gen)
         # Sort the population based on fitness

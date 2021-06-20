@@ -7,8 +7,14 @@ from PIL import Image
 # Retrieve host image host_img
 # Retrieve secret image secret_img
 
-host_img = np.array(Image.open('src/lenna-256.png'))[:, :, 0]
-secret_img = np.array(Image.open('src/baboon-64.png'))[:, :, 0]
+host_img = Image.open('src/lena512.bmp')
+host_img = host_img.resize((512, 512))
+secret_img = Image.open('src/general_test_pattern.png')
+secret_img = secret_img.resize((256, 256))
+
+host_img = np.array(host_img)
+secret_img = np.array(secret_img)
+
 print('Host',host_img.shape)
 print('Secret',secret_img.shape)
 # Encrypt
