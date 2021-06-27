@@ -2,39 +2,42 @@ import numpy as np
 from chao import chao_permutation
 
 def embed(stego, secret, chromosome):
+    # Convert data to uint8
+    stego = stego.astype('uint8')
+    secret = secret.astype('uint8')
+    # stego = _stego.copy()
+    # secret = _secret.copy()
+    # chromosome = _chromosome
     """Embed secret bits into stego bits according to the chromosome"""
 
     """The chromosome has the following gene representation:
-    [x0, a, xoffset, yoffset, bit-planes, sb-pole, sb-dire, bp-dire]"""
+    [x0, xoffset, yoffset, bit-planes, sb-pole, sb-dire, bp-dire]"""
     stego_shape = stego.shape
     secret_shape = secret.shape
-    x0 =         ((chromosome >> 35) & 1023) / 1024
-    a =          3 + ((chromosome >> 25) & 1023) / 1024
+    x0 =         ((chromosome >> 25) & 1023) / 1024
+    a =          3.57
     X_off =      (chromosome >> 16) & 511
     Y_off =      (chromosome >>  7) & 511
     bit_planes = (chromosome >>  3) & 15
     sb_pole =    (chromosome >>  2) & 1
     sb_dir =     (chromosome >>  1) & 1
     bp_dir =     (chromosome >>  0) & 1
+
     # Bit-Planes: Extract the bit mask
     mask = np.unpackbits(np.array([bit_planes], dtype='uint8'))[4:]
     idx = np.argwhere(mask == True)
+    idx = 3 - idx
+    idx = idx[::-1]
 
     if len(idx) == 0:
-        return None
-        
-    idx = np.concatenate(idx)
-    capacity = round(8 / len(idx)) * len(secret)
-
-    if capacity > stego_shape[0]:
         return None
 
     # Flatten the secret bits
     secret = np.concatenate(secret)
+    idx = np.concatenate(idx)
 
-    # Convert data to uint8
-    stego = stego.astype('uint8')
-    secret = secret.astype('uint8')
+    if len(secret) * 8 > stego_shape[0] * stego_shape[1] * len(idx):
+        return None
 
     # SB-Pole: Compliment secret bits
     if sb_pole:

@@ -2,17 +2,18 @@ from random import randint, shuffle
 from psnr import psnr
 from embedder import embed
 import math
+import numpy as np
+from datetime import datetime
 
 population = []
-MUTATION_RATE = 0.04
+MUTATION_RATE = 0.25
 ITERS = 50
-POPULATION_SIZE = 300
-LEN = 45  
+POPULATION_SIZE = 100
+LEN = 35  
 # Chromosome
 # Gene       | Length
 # -------------------
 # x0         |    10
-# a          |    10
 # X_off      |     9
 # Y_off      |     9
 # Bit Planes |     4
@@ -20,7 +21,7 @@ LEN = 45
 # SB Dir     |     1
 # BP Dir     |     1
 # ------------------
-#            |    45
+#            |    35
 
 def init_population():
     global population
@@ -73,6 +74,8 @@ def find_embedding(host, secret):
     global population
     init_population()
     gen = 0
+    prev = host.copy()
+    prevsecret = secret.copy()
     while gen < ITERS:
         assert len(population) == POPULATION_SIZE
         gen += 1
@@ -80,9 +83,13 @@ def find_embedding(host, secret):
         # Sort the population based on fitness
         # population[0] is the best chromosome in the population
         # population.sort(key=lambda x:fitness(host, secret, x))
+        before_timestamp = datetime.now()
         population = [(fitness(host, secret, x), x) for x in population]
         population.sort(reverse=True)
         population = [x[1] for x in population]
+        after_timestamp = datetime.now()
+
+        print('Took', (after_timestamp - before_timestamp).total_seconds(), 's')
 
         print(*population[:10])
         print("Fitness", fitness(host, secret, population[0]))
@@ -95,6 +102,11 @@ def find_embedding(host, secret):
         # Mutation
         mutation()
         print("Mutation")
+
+        assert np.array_equal(host, prev)
+        assert np.array_equal(secret, prevsecret)
+        prev = host.copy()
+        prevsecret = secret.copy()
 
     # population.sort(key=lambda x:fitness(host, secret, x))
     population = [(fitness(host, secret, x), x) for x in population]
