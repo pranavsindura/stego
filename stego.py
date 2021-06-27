@@ -6,9 +6,9 @@ import numpy as np
 from datetime import datetime
 
 population = []
-MUTATION_RATE = 0.25
-ITERS = 50
-POPULATION_SIZE = 100
+MUTATION_RATE = 0.1
+ITERS = 1
+POPULATION_SIZE = 1
 LEN = 35  
 # Chromosome
 # Gene       | Length
@@ -74,8 +74,6 @@ def find_embedding(host, secret):
     global population
     init_population()
     gen = 0
-    prev = host.copy()
-    prevsecret = secret.copy()
     while gen < ITERS:
         assert len(population) == POPULATION_SIZE
         gen += 1
@@ -93,6 +91,8 @@ def find_embedding(host, secret):
 
         print(*population[:10])
         print("Fitness", fitness(host, secret, population[0]))
+        if gen == ITERS:
+            break
         # Selection
         selection()
         print("Selection")
@@ -102,17 +102,7 @@ def find_embedding(host, secret):
         # Mutation
         mutation()
         print("Mutation")
-
-        assert np.array_equal(host, prev)
-        assert np.array_equal(secret, prevsecret)
-        prev = host.copy()
-        prevsecret = secret.copy()
-
-    # population.sort(key=lambda x:fitness(host, secret, x))
-    population = [(fitness(host, secret, x), x) for x in population]
-    population.sort(reverse=True)
-    population = [x[1] for x in population]
-
+                         
     return population[0]
 
 def encrypt(host_img, secret_img):
