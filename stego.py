@@ -7,7 +7,7 @@ from datetime import datetime
 
 population = []
 MUTATION_RATE = 0.1
-ITERS = 30
+ITERS = 1
 POPULATION_SIZE = 100
 LEN = 35  
 # Chromosome
@@ -32,14 +32,10 @@ def init_population():
 
 def fitness(host, secret, chromosome):
     """more the psnr, more fit the stego image is"""
-    best = -math.inf
-    for x0 in range(1 << 10):
-        nchromosome = chromosome & ~(1023 << 25)
-        nchromosome = nchromosome | (x0 << 25)
-        stego = embed(host, secret, nchromosome)
-        if stego is not None:
-            best = max(best, psnr(host, stego))
-    return best
+    stego = embed(host, secret, chromosome)
+    if stego is not None:
+        return psnr(host, stego)
+    return -math.inf
 
 def selection():
     global population
