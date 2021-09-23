@@ -7,7 +7,7 @@ from datetime import datetime
 
 population = []
 MUTATION_RATE = 0.1
-ITERS = 1
+ITERS = 50
 POPULATION_SIZE = 100
 LEN = 35  
 # Chromosome
